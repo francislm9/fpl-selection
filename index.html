@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FPL XI Picker</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --panel:#151b23;
+    --panel2:#1c2530;
+    --line: #2a3441;
+    --text:#eef2f6;
+    --sub:#8b98a8;
+    --pitch:#0e4429;
+    --pitch2:#0a3620;
+    --purple:#37003c;
+    --green:#00ff87;
+    --amber:#e8a33d;
+    --red:#e8543d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:16px 14px 60px;}
+
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  header h1{font-size:17px;font-weight:700;margin:0;letter-spacing:-0.2px;}
+  header h1 span{color:var(--green);}
+  .gw-pill{
+    font-size:12px;font-weight:600;color:var(--sub);
+    background:var(--panel2);border:1px solid var(--line);
+    padding:4px 10px;border-radius:20px;
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:0.06em;color:var(--sub);margin:0 0 12px;font-weight:700;}
+
+  label{display:block;font-size:13px;color:var(--sub);margin-bottom:6px;font-weight:600;}
+  input[type=text], input[type=number]{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:11px 12px;
+    border-radius:9px;
+    font-size:15px;
+    outline:none;
+  }
+  input[type=text]:focus, input[type=number]:focus{border-color:var(--green);}
+  .row{display:flex;gap:10px;}
+  .row > div{flex:1;}
+
+  button.primary{
+    width:100%;
+    background:var(--green);
+    color:#012;
+    border:none;
+    font-weight:700;
+    font-size:15px;
+    padding:13px;
+    border-radius:9px;
+    margin-top:12px;
+    cursor:pointer;
+  }
+  button.primary:disabled{opacity:0.5;cursor:default;}
+  button.primary:active{transform:scale(0.99);}
+
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--sub);
+    font-size:13px;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  button.ghost:hover{border-color:var(--sub);color:var(--text);}
+
+  .status{font-size:13px;color:var(--sub);margin-top:10px;min-height:16px;}
+  .status.err{color:var(--red);}
+  .status.ok{color:var(--green);}
+
+  .hidden{display:none !important;}
+
+  .spinner{
+    width:16px;height:16px;border-radius:50%;
+    border:2px solid var(--line); border-top-color:var(--green);
+    display:inline-block; vertical-align:-3px; margin-right:6px;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* Team summary bar */
+  .teambar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .teambar .name{font-weight:700;font-size:15px;}
+  .teambar .sub{font-size:12px;color:var(--sub);}
+
+  /* Pitch */
+  .pitch{
+    background:linear-gradient(180deg, var(--pitch) 0%, var(--pitch2) 100%);
+    border-radius:12px;
+    padding:14px 8px 10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .pitch::before{
+    content:"";
+    position:absolute;inset:0;
+    background:repeating-linear-gradient(180deg, rgba(255,255,255,0.035) 0 40px, rgba(255,255,255,0) 40px 80px);
+    pointer-events:none;
+  }
+  .line{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin:10px 0;
+    flex-wrap:nowrap;
+  }
+  .pcard{
+    background:rgba(255,255,255,0.97);
+    color:#111;
+    border-radius:8px;
+    width:74px;
+    padding:5px 4px 6px;
+    text-align:center;
+    position:relative;
+    box-shadow:0 2px 4px rgba(0,0,0,0.35);
+  }
+  .pcard .cap{
+    position:absolute;top:-6px;right:-6px;
+    background:#37003c;color:#fff;
+    font-size:9px;font-weight:800;
+    width:16px;height:16px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    border:1.5px solid #fff;
+  }
+  .pcard .pos{
+    font-size:8px;font-weight:800;color:#fff;
+    background:#555;
+    display:inline-block;padding:1px 5px;border-radius:4px;
+    margin-bottom:3px;
+    letter-spacing:0.03em;
+  }
+  .pcard .pos.gkp{background:#e8a33d;}
+  .pcard .pos.def{background:#37a3e8;}
+  .pcard .pos.mid{background:#00c46a;}
+  .pcard .pos.fwd{background:#e8543d;}
+  .pcard .nm{font-size:11.5px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pcard .pts{font-size:10px;color:#666;margin-top:1px;}
+  .pcard.flag{outline:1.5px solid var(--amber);}
+
+  /* Bench */
+  .bench-wrap{
+    background:var(--panel2);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:10px;
+    margin-top:14px;
+  }
+  .bench-label{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:8px;}
+  .bench-row{display:flex;gap:8px;overflow-x:auto;}
+  .bench-row .pcard{flex:0 0 auto;background:rgba(255,255,255,0.92);}
+
+  .legend{display:flex;gap:14px;margin-top:12px;font-size:11px;color:var(--sub);flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:4px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .dot.cap{background:#37003c;}
+  .dot.flag{background:var(--amber);}
+
+  .note{
+    font-size:12.5px;
+    color:var(--sub);
+    background:var(--panel2);
+    border-radius:9px;
+    padding:10px 12px;
+    margin-top:12px;
+    line-height:1.5;
+  }
+  .note b{color:var(--text);}
+
+  .swap-list{margin-top:6px;}
+  .swap-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 0;border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .swap-item:last-child{border-bottom:none;}
+  .swap-item .arrow{color:var(--green);font-weight:700;}
+
+  footer{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;}
+  footer a{color:var(--sub);}
+
+  .toprow{display:flex;justify-content:space-between;align-items:center;}
+  .toprow button.ghost{flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>FPL <span>XI</span> Picker</h1>
+    <div class="gw-pill" id="gwPill">—</div>
+  </header>
+
+  <div class="card" id="setupCard">
+    <h2>Your team</h2>
+    <label for="teamId">FPL Team ID</label>
+    <input type="text" id="teamId" inputmode="numeric" placeholder="e.g. 1234567" autocomplete="off">
+    <div class="status" id="setupStatus"></div>
+    <button class="primary" id="loadBtn">Get my lineup</button>
+  </div>
+
+  <div id="resultArea" class="hidden">
+
+    <div class="card">
+      <div class="toprow">
+        <div>
+          <div class="teambar"><span class="name" id="mgrTeamName">—</span></div>
+          <div class="sub" id="mgrSub">—</div>
+        </div>
+        <button class="ghost" id="changeTeamBtn">Change</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Best XI — <span id="formationTxt"></span></h2>
+      <div class="pitch" id="pitch"></div>
+
+      <div class="bench-wrap">
+        <div class="bench-label">Bench (in order)</div>
+        <div class="bench-row" id="benchRow"></div>
+      </div>
+
+      <div class="legend">
+        <span><span class="dot cap"></span> Captain</span>
+        <span><span class="dot flag"></span> Injury / doubt flag</span>
+      </div>
+    </div>
+
+    <div class="card" id="swapCard">
+      <h2>Changes vs your current lineup</h2>
+      <div class="swap-list" id="swapList"></div>
+    </div>
+
+    <div class="note" id="methodNote"></div>
+
+  </div>
+
+  <footer>Data from the official FPL API · refresh each gameweek before deadline</footer>
+</div>
+
+<script>
+const FPL_BASE = "https://fantasy.premierleague.com/api";
+// Calls this site's own Netlify serverless function (netlify/functions/fpl.js),
+// which fetches FPL data server-side — no browser CORS restriction, no
+// dependency on flaky third-party public proxies.
+const OWN_FUNCTION = (path) => "/api" + path;
+// Public proxies kept only as a last-resort fallback in case the function
+// isn't deployed yet (e.g. viewing this file outside of Netlify).
+const FALLBACK_PROXIES = [
+  { name: "allorigins-get", build: (t) => "https://api.allorigins.win/get?url=" + encodeURIComponent(t), unwrap: true },
+  { name: "codetabs", build: (t) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(t) }
+];
+
+let bootstrap = null;
+let teamsById = null;
+let elementsById = null;
+
+const $ = (id) => document.getElementById(id);
+
+async function tryFetch(url, unwrap){
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 9000);
+  const res = await fetch(url, { signal: controller.signal });
+  clearTimeout(timeout);
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const text = await res.text();
+  const parsed = JSON.parse(text);
+  if(unwrap){
+    if(typeof parsed.contents !== "string") throw new Error("no contents");
+    return JSON.parse(parsed.contents);
+  }
+  return parsed;
+}
+
+async function fplFetch(path){
+  const attempts = [];
+
+  // 1) Try our own serverless function first — fastest and most reliable.
+  try{
+    return await tryFetch(OWN_FUNCTION(path), false);
+  }catch(err){
+    attempts.push(`own function: ${err.name === "AbortError" ? "timed out" : err.message}`);
+  }
+
+  // 2) Fall back to public proxies only if the function isn't available.
+  const target = FPL_BASE + path;
+  for(const proxy of FALLBACK_PROXIES){
+    try{
+      return await tryFetch(proxy.build(target), proxy.unwrap);
+    }catch(err){
+      attempts.push(`${proxy.name}: ${err.name === "AbortError" ? "timed out" : err.message}`);
+    }
+  }
+
+  const detail = attempts.join(" | ");
+  console.error("All sources failed:", detail);
+  const e = new Error(detail || "All sources failed");
+  e.detail = detail;
+  throw e;
+}
+
+function setStatus(msg, kind){
+  const el = $("setupStatus");
+  el.textContent = msg || "";
+  el.className = "status" + (kind ? " " + kind : "");
+}
+
+function posName(type){
+  return {1:"GKP",2:"DEF",3:"MID",4:"FWD"}[type] || "?";
+}
+function posClass(type){
+  return {1:"gkp",2:"def",3:"mid",4:"fwd"}[type] || "";
+}
+
+// Predicted score per player: blend of season form, points-per-game and
+// next-fixture difficulty, mirroring how strong FPL managers pick a matchday XI.
+function scorePlayer(el, teamsById){
+  const form = parseFloat(el.form || "0");
+  const ppg = parseFloat(el.points_per_game || "0");
+  const ep = parseFloat(el.ep_next || el.ep_this || "0");
+  // ep_next is FPL's own official expected-points-next-gw projection; weight it highest.
+  let score = (ep * 2) + (form * 1.1) + (ppg * 0.6);
+  // Availability penalty
+  if(el.status === "i" || el.status === "s" || el.status === "u") score -= 100;
+  else if(el.status === "d") score -= (100 - (el.chance_of_playing_next_round ?? 75)) * 0.05;
+  return score;
+}
+
+function availabilityFlag(el){
+  if(el.status === "i") return "Injured";
+  if(el.status === "s") return "Suspended";
+  if(el.status === "u") return "Unavailable";
+  if(el.status === "d") return "Doubt (" + (el.chance_of_playing_next_round ?? "?") + "%)";
+  return null;
+}
+
+// Pick best valid formation (1 GKP always, 3-5 DEF, 2-5 MID, 1-3 FWD, 11 total)
+function pickBestXI(squadPlayers){
+  const byPos = {1:[], 2:[], 3:[], 4:[]};
+  squadPlayers.forEach(p => byPos[p.element_type].push(p));
+  Object.values(byPos).forEach(arr => arr.sort((a,b) => b._score - a._score));
+
+  const formations = [];
+  for(let d=3; d<=5; d++){
+    for(let m=2; m<=5; m++){
+      for(let f=1; f<=3; f++){
+        if(1+d+m+f === 11) formations.push([d,m,f]);
+      }
+    }
+  }
+
+  let best = null;
+  for(const [d,m,f] of formations){
+    if(byPos[1].length < 1 || byPos[2].length < d || byPos[3].length < m || byPos[4].length < f) continue;
+    const xi = [
+      ...byPos[1].slice(0,1),
+      ...byPos[2].slice(0,d),
+      ...byPos[3].slice(0,m),
+      ...byPos[4].slice(0,f)
+    ];
+    const total = xi.reduce((s,p) => s + p._score, 0);
+    if(!best || total > best.total){
+      best = { xi, total, formation: [d,m,f] };
+    }
+  }
+
+  const xiIds = new Set(best.xi.map(p => p.id));
+  const bench = squadPlayers.filter(p => !xiIds.has(p.id));
+  // Bench order: GK first if there's a spare GK, then by score desc
+  const benchGk = bench.filter(p => p.element_type === 1);
+  const benchOut = bench.filter(p => p.element_type !== 1).sort((a,b) => b._score - a._score);
+  const benchOrdered = [...benchOut, ...benchGk];
+
+  return { xi: best.xi, bench: benchOrdered, formation: best.formation };
+}
+
+function renderPitch(xi, formation){
+  const [d,m,f] = formation;
+  const byType = {1:[], 2:[], 3:[], 4:[]};
+  xi.forEach(p => byType[p.element_type].push(p));
+  // sort each line by score desc for consistent left-to-right display
+  Object.values(byType).forEach(arr => arr.sort((a,b) => b._score - a._score));
+
+  const capId = xi.reduce((best, p) => (!best || p._score > best._score) ? p : best, null)?.id;
+
+  const lineHtml = (arr) => `<div class="line">${arr.map(p => playerCardHtml(p, p.id === capId)).join("")}</div>`;
+
+  $("pitch").innerHTML =
+    lineHtml(byType[1]) +
+    lineHtml(byType[2]) +
+    lineHtml(byType[3]) +
+    lineHtml(byType[4]);
+
+  $("formationTxt").textContent = `${d}-${m}-${f}`;
+}
+
+function playerCardHtml(p, isCaptain){
+  const flag = availabilityFlag(p);
+  const teamShort = teamsById[p.team]?.short_name || "";
+  return `
+    <div class="pcard ${flag ? "flag" : ""}">
+      ${isCaptain ? '<div class="cap">C</div>' : ""}
+      <div class="pos ${posClass(p.element_type)}">${posName(p.element_type)}</div>
+      <div class="nm">${escapeHtml(p.web_name)}</div>
+      <div class="pts">${teamShort} · ${p.ep_next ?? p.ep_this ?? "–"} xPts</div>
+    </div>`;
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function renderBench(bench){
+  $("benchRow").innerHTML = bench.map(p => playerCardHtml(p, false)).join("");
+}
+
+function renderSwaps(prevStartIds, newXiIds, allById){
+  const cameIn = newXiIds.filter(id => !prevStartIds.has(id));
+  const wentOut = [...prevStartIds].filter(id => !newXiIds.includes(id));
+
+  if(cameIn.length === 0 && wentOut.length === 0){
+    $("swapCard").classList.add("hidden");
+    return;
+  }
+  $("swapCard").classList.remove("hidden");
+
+  const pairs = [];
+  const maxLen = Math.max(cameIn.length, wentOut.length);
+  for(let i=0;i<maxLen;i++){
+    pairs.push([wentOut[i], cameIn[i]]);
+  }
+
+  $("swapList").innerHTML = pairs.map(([outId, inId]) => {
+    const outP = outId ? allById[outId] : null;
+    const inP = inId ? allById[inId] : null;
+    return `<div class="swap-item">
+      <span>${outP ? escapeHtml(outP.web_name) : "Bench"}</span>
+      <span class="arrow">→</span>
+      <span>${inP ? escapeHtml(inP.web_name) : "Bench"}</span>
+    </div>`;
+  }).join("");
+}
+
+async function loadTeam(){
+  const teamIdRaw = $("teamId").value.trim();
+  if(!teamIdRaw || !/^\d+$/.test(teamIdRaw)){
+    setStatus("Enter a valid numeric team ID.", "err");
+    return;
+  }
+  const teamId = teamIdRaw;
+
+  $("loadBtn").disabled = true;
+  setStatus('<span class="spinner"></span> Fetching live FPL data…');
+  $("setupStatus").innerHTML = '<span class="spinner"></span> Fetching live FPL data…';
+
+  try{
+    if(!bootstrap){
+      bootstrap = await fplFetch("/bootstrap-static/");
+      teamsById = {};
+      bootstrap.teams.forEach(t => teamsById[t.id] = t);
+      elementsById = {};
+      bootstrap.elements.forEach(e => elementsById[e.id] = e);
+    }
+
+    const events = bootstrap.events;
+    const currentEvent = events.find(e => e.is_current) || events.find(e => e.is_next);
+    const nextEvent = events.find(e => e.is_next) || currentEvent;
+    const gwForPicks = currentEvent ? currentEvent.id : (nextEvent ? nextEvent.id - 1 : 1);
+
+    const entry = await fplFetch(`/entry/${teamId}/`);
+    let picksData;
+    try{
+      picksData = await fplFetch(`/entry/${teamId}/event/${gwForPicks}/picks/`);
+    }catch(e){
+      picksData = await fplFetch(`/entry/${teamId}/event/${Math.max(1, gwForPicks-1)}/picks/`);
+    }
+
+    const squadPlayers = picksData.picks.map(pk => {
+      const base = elementsById[pk.element];
+      return { ...base, _score: scorePlayer(base, teamsById), _wasStarter: pk.position <= 11 };
+    });
+
+    const prevStartIds = new Set(picksData.picks.filter(pk => pk.position <= 11).map(pk => pk.element));
+
+    const { xi, bench, formation } = pickBestXI(squadPlayers);
+
+    // Render
+    $("mgrTeamName").textContent = entry.name || "Your team";
+    $("mgrSub").textContent = `${entry.player_first_name || ""} ${entry.player_last_name || ""} · GW${gwForPicks}`.trim();
+    $("gwPill").textContent = `GW ${nextEvent ? nextEvent.id : gwForPicks}`;
+
+    renderPitch(xi, formation);
+    renderBench(bench);
+    renderSwaps(prevStartIds, xi.map(p=>p.id), elementsById);
+
+    const flagged = [...xi, ...bench].filter(p => availabilityFlag(p));
+    $("methodNote").innerHTML = `<b>How this XI was picked:</b> ranked every player in your 15 by FPL's next-gameweek expected points, blended with season form and points-per-game, then chose the highest-scoring valid formation (1 GKP, 3–5 DEF, 2–5 MID, 1–3 FWD). Captain is your top scorer.` +
+      (flagged.length ? `<br><br><b>Flagged:</b> ${flagged.map(p => escapeHtml(p.web_name) + " (" + availabilityFlag(p) + ")").join(", ")}` : "");
+
+    $("setupCard").classList.add("hidden");
+    $("resultArea").classList.remove("hidden");
+    setStatus("");
+  }catch(err){
+    console.error(err);
+    const detail = err.detail ? `<br><span style="font-size:11px;opacity:0.7">${escapeHtml(err.detail)}</span>` : "";
+    setStatus("Couldn't reach FPL's servers right now." + detail, "err");
+    $("setupStatus").innerHTML = "Couldn't reach FPL's servers right now." + detail;
+  }finally{
+    $("loadBtn").disabled = false;
+  }
+}
+
+$("loadBtn").addEventListener("click", loadTeam);
+$("teamId").addEventListener("keydown", (e) => { if(e.key === "Enter") loadTeam(); });
+$("changeTeamBtn").addEventListener("click", () => {
+  $("resultArea").classList.add("hidden");
+  $("setupCard").classList.remove("hidden");
+});
+</script>
+</body>
+</html>
