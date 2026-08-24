@@ -266,7 +266,7 @@ const FPL_BASE = "https://fantasy.premierleague.com/api";
 // Calls this site's own Netlify serverless function (netlify/functions/fpl.js),
 // which fetches FPL data server-side — no browser CORS restriction, no
 // dependency on flaky third-party public proxies.
-const OWN_FUNCTION = (path) => "/api" + path;
+const OWN_FUNCTION = (path) => "/.netlify/functions/fpl?path=" + encodeURIComponent(path);
 // Public proxies kept only as a last-resort fallback in case the function
 // isn't deployed yet (e.g. viewing this file outside of Netlify).
 const FALLBACK_PROXIES = [
