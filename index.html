@@ -496,13 +496,24 @@ function posClass(type){
  
 // Predicted score per player: blend of season form, points-per-game and
 // next-fixture difficulty, mirroring how strong FPL managers pick a matchday XI.
-function scorePlayer(el, teamsById){
+// Two scores per player:
+// - scorePlayer(): includes an availability penalty, used for XI/bench selection
+//   (so injured players correctly rank last for starting).
+// - projectedPoints(): the clean underlying projection with NO penalty, used
+//   for transfer "gain" comparisons — comparing against a penalized score
+//   would make any healthy replacement look like a huge gain regardless of
+//   actual quality, which is misleading.
+function projectedPoints(el){
   const form = parseFloat(el.form || "0");
   const ppg = parseFloat(el.points_per_game || "0");
   const ep = parseFloat(el.ep_next || el.ep_this || "0");
-  // ep_next is FPL's own official expected-points-next-gw projection; weight it highest.
-  let score = (ep * 2) + (form * 1.1) + (ppg * 0.6);
-  // Availability penalty
+  return (ep * 2) + (form * 1.1) + (ppg * 0.6);
+}
+ 
+function scorePlayer(el, teamsById){
+  let score = projectedPoints(el);
+  // Availability penalty — for ranking within your own squad (XI/bench/captain
+  // choice) only. Never use this score to compute point "gain" for transfers.
   if(el.status === "i" || el.status === "s" || el.status === "u") score -= 100;
   else if(el.status === "d") score -= (100 - (el.chance_of_playing_next_round ?? 75)) * 0.05;
   return score;
@@ -652,7 +663,7 @@ function bestReplacementFor(candidateOut, squadIds, allElements, bank, fixtures,
  
   let best = null;
   for(const cand of pool){
-    const candScore = scorePlayer(cand, teamsById);
+    const candScore = projectedPoints(cand);
     const fd = fixtureDifficultyForTeam(cand.team, fixtures, nextGwId);
     const fixtureBonus = (3 - fd) * 0.3;
     const adjScore = candScore + fixtureBonus;
@@ -673,7 +684,11 @@ function suggestTransfers(squadPlayers, allElements, bank, fixtures, nextGwId){
   for(const out of squadPlayers){
     const best = bestReplacementFor(out, squadIds, allElements, bank, fixtures, nextGwId);
     if(!best) continue;
-    const gain = best.rawScore - out._score;
+    // Use the clean (non-penalized) projection for both sides of the
+    // comparison, so "gain" reflects actual expected-points difference,
+    // not an availability penalty.
+    const outCleanScore = projectedPoints(out);
+    const gain = best.rawScore - outCleanScore;
     const isInjuryDriven = injuredIds.has(out.id);
     // Only surface genuinely worthwhile upgrades: clear score gain, or an
     // injury/unavailable player regardless of gain size.
