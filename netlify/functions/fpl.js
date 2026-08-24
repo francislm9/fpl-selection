@@ -12,7 +12,13 @@ exports.handler = async function (event) {
 
   // Only allow paths under the official FPL API to prevent this function
   // from being abused as an open proxy.
-  const allowedPrefixes = ["/bootstrap-static/", "/entry/"];
+  const allowedPrefixes = [
+    "/bootstrap-static/",
+    "/entry/",
+    "/leagues-classic/",
+    "/fixtures/",
+    "/event/"
+  ];
   if (!allowedPrefixes.some((p) => path.startsWith(p))) {
     return {
       statusCode: 400,
