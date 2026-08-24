@@ -28,7 +28,7 @@
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:520px;margin:0 auto;padding:16px 14px 60px;}
-
+ 
   header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
   header h1{font-size:17px;font-weight:700;margin:0;letter-spacing:-0.2px;}
   header h1 span{color:var(--green);}
@@ -37,7 +37,7 @@
     background:var(--panel2);border:1px solid var(--line);
     padding:4px 10px;border-radius:20px;
   }
-
+ 
   .card{
     background:var(--panel);
     border:1px solid var(--line);
@@ -46,7 +46,7 @@
     margin-bottom:14px;
   }
   .card h2{font-size:13px;text-transform:uppercase;letter-spacing:0.06em;color:var(--sub);margin:0 0 12px;font-weight:700;}
-
+ 
   label{display:block;font-size:13px;color:var(--sub);margin-bottom:6px;font-weight:600;}
   input[type=text], input[type=number]{
     width:100%;
@@ -61,7 +61,7 @@
   input[type=text]:focus, input[type=number]:focus{border-color:var(--green);}
   .row{display:flex;gap:10px;}
   .row > div{flex:1;}
-
+ 
   button.primary{
     width:100%;
     background:var(--green);
@@ -76,7 +76,7 @@
   }
   button.primary:disabled{opacity:0.5;cursor:default;}
   button.primary:active{transform:scale(0.99);}
-
+ 
   button.ghost{
     background:transparent;
     border:1px solid var(--line);
@@ -87,13 +87,13 @@
     cursor:pointer;
   }
   button.ghost:hover{border-color:var(--sub);color:var(--text);}
-
+ 
   .status{font-size:13px;color:var(--sub);margin-top:10px;min-height:16px;}
   .status.err{color:var(--red);}
   .status.ok{color:var(--green);}
-
+ 
   .hidden{display:none !important;}
-
+ 
   .spinner{
     width:16px;height:16px;border-radius:50%;
     border:2px solid var(--line); border-top-color:var(--green);
@@ -101,12 +101,12 @@
     animation:spin .7s linear infinite;
   }
   @keyframes spin{to{transform:rotate(360deg);}}
-
+ 
   /* Team summary bar */
   .teambar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
   .teambar .name{font-weight:700;font-size:15px;}
   .teambar .sub{font-size:12px;color:var(--sub);}
-
+ 
   /* Pitch */
   .pitch{
     background:linear-gradient(180deg, var(--pitch) 0%, var(--pitch2) 100%);
@@ -160,7 +160,7 @@
   .pcard .nm{font-size:11.5px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pcard .pts{font-size:10px;color:#666;margin-top:1px;}
   .pcard.flag{outline:1.5px solid var(--amber);}
-
+ 
   /* Bench */
   .bench-wrap{
     background:var(--panel2);
@@ -172,14 +172,14 @@
   .bench-label{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:8px;}
   .bench-row{display:flex;gap:8px;overflow-x:auto;}
   .bench-row .pcard{flex:0 0 auto;background:rgba(255,255,255,0.92);}
-
+ 
   .legend{display:flex;gap:14px;margin-top:12px;font-size:11px;color:var(--sub);flex-wrap:wrap;}
   .legend span{display:inline-flex;align-items:center;gap:4px;}
   .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
   .dot.cap{background:#37003c;}
   .dot.vcap{background:#8b5cf6;}
   .dot.flag{background:var(--amber);}
-
+ 
   .vcap-badge{
     position:absolute;top:-6px;left:-6px;
     background:#8b5cf6;color:#fff;
@@ -188,7 +188,7 @@
     display:flex;align-items:center;justify-content:center;
     border:1.5px solid #fff;
   }
-
+ 
   .verdict{
     display:inline-block;
     font-size:11px;font-weight:800;letter-spacing:0.04em;
@@ -198,7 +198,7 @@
   .verdict.yes{background:rgba(0,255,135,0.15);color:var(--green);}
   .verdict.no{background:rgba(139,152,168,0.15);color:var(--sub);}
   .verdict.maybe{background:rgba(232,163,61,0.15);color:var(--amber);}
-
+ 
   .transfer-row{
     display:flex;align-items:center;justify-content:space-between;
     gap:10px;padding:10px 0;
@@ -206,7 +206,7 @@
   .transfer-row .pwrap{text-align:center;flex:1;}
   .transfer-row .pwrap .pcard{width:100%;max-width:100px;margin:0 auto;}
   .transfer-arrow{color:var(--green);font-size:20px;font-weight:800;flex:0 0 auto;}
-
+ 
   .stat-line{
     display:flex;justify-content:space-between;
     font-size:13px;padding:6px 0;
@@ -217,7 +217,7 @@
   .stat-line .v{font-weight:700;}
   .stat-line .v.pos{color:var(--green);}
   .stat-line .v.neg{color:var(--red);}
-
+ 
   .rival-row{
     display:flex;justify-content:space-between;align-items:center;
     padding:9px 0;border-bottom:1px solid var(--line);
@@ -229,7 +229,22 @@
   .rival-row .rn{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px;}
   .rival-row .rp{font-weight:700;flex:0 0 auto;}
   .rival-diff{font-size:11px;color:var(--sub);margin-top:2px;}
-
+ 
+  .league-row{
+    display:flex;align-items:center;gap:8px;
+    background:var(--panel2);border:1px solid var(--line);
+    border-radius:9px;padding:9px 10px;
+  }
+  .league-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--green);flex:0 0 auto;}
+  .league-row input[type=text]{
+    flex:1;background:transparent;border:none;color:var(--text);
+    font-size:14px;padding:0;outline:none;
+  }
+  .league-row .remove-league{
+    flex:0 0 auto;color:var(--sub);background:none;border:none;
+    font-size:16px;cursor:pointer;padding:0 4px;
+  }
+ 
   .note{
     font-size:12.5px;
     color:var(--sub);
@@ -240,7 +255,7 @@
     line-height:1.5;
   }
   .note b{color:var(--text);}
-
+ 
   .swap-list{margin-top:6px;}
   .swap-item{
     display:flex;justify-content:space-between;align-items:center;
@@ -249,34 +264,41 @@
   }
   .swap-item:last-child{border-bottom:none;}
   .swap-item .arrow{color:var(--green);font-weight:700;}
-
+ 
   footer{text-align:center;font-size:11px;color:var(--sub);margin-top:10px;}
   footer a{color:var(--sub);}
-
+ 
   .toprow{display:flex;justify-content:space-between;align-items:center;}
   .toprow button.ghost{flex:0 0 auto;}
 </style>
 </head>
 <body>
 <div class="wrap">
-
+ 
   <header>
     <h1>FPL <span>XI</span> Picker</h1>
     <div class="gw-pill" id="gwPill">—</div>
   </header>
-
+ 
+  <div class="card hidden" id="deadlineCard">
+    <div class="sub" style="margin-bottom:4px">Next deadline</div>
+    <div style="font-size:20px;font-weight:800" id="deadlineCountdown">—</div>
+    <div class="sub" id="deadlineDate" style="margin-top:2px"></div>
+  </div>
+ 
   <div class="card" id="setupCard">
     <h2>Your team</h2>
     <label for="teamId">FPL Team ID</label>
-    <input type="text" id="teamId" inputmode="numeric" placeholder="e.g. 1234567" autocomplete="off">
-    <label for="leagueId" style="margin-top:12px">Mini League ID (optional)</label>
-    <input type="text" id="leagueId" inputmode="numeric" placeholder="e.g. 1263917" autocomplete="off" value="1263917">
+    <input type="text" id="teamId" inputmode="numeric" placeholder="e.g. 1234567" autocomplete="off" value="1730103">
+    <label style="margin-top:12px">Mini leagues to track</label>
+    <div id="leagueChecks" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div>
+    <button class="ghost" id="addLeagueBtn" style="margin-top:8px;width:100%">+ Add another league ID</button>
     <div class="status" id="setupStatus"></div>
     <button class="primary" id="loadBtn">Get my lineup</button>
   </div>
-
+ 
   <div id="resultArea" class="hidden">
-
+ 
     <div class="card">
       <div class="toprow">
         <div>
@@ -286,52 +308,52 @@
         <button class="ghost" id="changeTeamBtn">Change</button>
       </div>
     </div>
-
+ 
     <div class="card">
       <h2>Best XI — <span id="formationTxt"></span></h2>
       <div class="pitch" id="pitch"></div>
-
+ 
       <div class="bench-wrap">
         <div class="bench-label">Bench (in order)</div>
         <div class="bench-row" id="benchRow"></div>
       </div>
-
+ 
       <div class="legend">
         <span><span class="dot cap"></span> Captain</span>
         <span><span class="dot vcap"></span> Vice-captain</span>
         <span><span class="dot flag"></span> Injury / doubt flag</span>
       </div>
     </div>
-
+ 
     <div class="card" id="swapCard">
       <h2>Changes vs your current lineup</h2>
       <div class="swap-list" id="swapList"></div>
     </div>
-
+ 
     <div class="card" id="transferCard">
       <h2>Suggested transfer</h2>
       <div id="transferBody"></div>
     </div>
-
+ 
     <div class="card" id="chipCard">
       <h2>Chip advice</h2>
       <div id="chipBody"></div>
     </div>
-
+ 
     <div class="card hidden" id="rivalCard">
       <h2>Your mini league</h2>
       <div id="rivalBody"></div>
     </div>
-
+ 
     <div class="note" id="methodNote"></div>
-
+ 
   </div>
-
+ 
   <footer>Data from the official FPL API · refresh each gameweek before deadline</footer>
 </div>
-
+ 
 <script>
-const DEFAULT_LEAGUE_ID = "1263917";
+const SAVED_LEAGUE_IDS = ["340455", "19391", "1263917", "94594"];
 const FPL_BASE = "https://fantasy.premierleague.com/api";
 // Calls this site's own Netlify serverless function (netlify/functions/fpl.js),
 // which fetches FPL data server-side — no browser CORS restriction, no
@@ -343,13 +365,80 @@ const FALLBACK_PROXIES = [
   { name: "allorigins-get", build: (t) => "https://api.allorigins.win/get?url=" + encodeURIComponent(t), unwrap: true },
   { name: "codetabs", build: (t) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(t) }
 ];
-
+ 
 let bootstrap = null;
 let teamsById = null;
 let elementsById = null;
-
+ 
 const $ = (id) => document.getElementById(id);
-
+ 
+// ---------- League selector UI ----------
+function renderLeagueChecks(){
+  const container = $("leagueChecks");
+  container.innerHTML = SAVED_LEAGUE_IDS.map((id, i) => `
+    <label class="league-row">
+      <input type="checkbox" data-league-id="${escapeHtml(id)}" ${i < 4 ? "checked" : ""}>
+      <input type="text" value="${escapeHtml(id)}" inputmode="numeric" data-league-input="${i}">
+      <button type="button" class="remove-league" data-remove-idx="${i}">✕</button>
+    </label>
+  `).join("");
+ 
+  container.querySelectorAll("[data-league-input]").forEach(input => {
+    input.addEventListener("change", () => {
+      const idx = Number(input.getAttribute("data-league-input"));
+      SAVED_LEAGUE_IDS[idx] = input.value.trim();
+      const checkbox = input.parentElement.querySelector("input[type=checkbox]");
+      if(checkbox) checkbox.setAttribute("data-league-id", input.value.trim());
+    });
+  });
+  container.querySelectorAll("[data-remove-idx]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.getAttribute("data-remove-idx"));
+      SAVED_LEAGUE_IDS.splice(idx, 1);
+      renderLeagueChecks();
+    });
+  });
+}
+ 
+function getCheckedLeagueIds(){
+  return [...document.querySelectorAll("#leagueChecks input[type=checkbox]:checked")]
+    .map(cb => cb.getAttribute("data-league-id"))
+    .filter(id => id && /^\d+$/.test(id));
+}
+ 
+// ---------- Deadline countdown ----------
+let deadlineInterval = null;
+function startDeadlineCountdown(deadlineIso){
+  if(deadlineInterval) clearInterval(deadlineInterval);
+  const deadline = new Date(deadlineIso);
+  $("deadlineCard").classList.remove("hidden");
+  $("deadlineDate").textContent = deadline.toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+ 
+  function tick(){
+    const now = new Date();
+    const diffMs = deadline - now;
+    const el = $("deadlineCountdown");
+    if(diffMs <= 0){
+      el.textContent = "Deadline passed";
+      el.style.color = "var(--sub)";
+      clearInterval(deadlineInterval);
+      return;
+    }
+    const totalMins = Math.floor(diffMs / 60000);
+    const days = Math.floor(totalMins / 1440);
+    const hours = Math.floor((totalMins % 1440) / 60);
+    const mins = totalMins % 60;
+    let text = "";
+    if(days > 0) text += `${days}d `;
+    text += `${hours}h ${mins}m`;
+    el.textContent = text;
+    el.style.color = diffMs < 3 * 60 * 60 * 1000 ? "var(--amber)" : "var(--green)";
+  }
+  tick();
+  deadlineInterval = setInterval(tick, 30000);
+}
+ 
+ 
 async function tryFetch(url, unwrap){
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 9000);
@@ -364,17 +453,17 @@ async function tryFetch(url, unwrap){
   }
   return parsed;
 }
-
+ 
 async function fplFetch(path){
   const attempts = [];
-
+ 
   // 1) Try our own serverless function first — fastest and most reliable.
   try{
     return await tryFetch(OWN_FUNCTION(path), false);
   }catch(err){
     attempts.push(`own function: ${err.name === "AbortError" ? "timed out" : err.message}`);
   }
-
+ 
   // 2) Fall back to public proxies only if the function isn't available.
   const target = FPL_BASE + path;
   for(const proxy of FALLBACK_PROXIES){
@@ -384,27 +473,27 @@ async function fplFetch(path){
       attempts.push(`${proxy.name}: ${err.name === "AbortError" ? "timed out" : err.message}`);
     }
   }
-
+ 
   const detail = attempts.join(" | ");
   console.error("All sources failed:", detail);
   const e = new Error(detail || "All sources failed");
   e.detail = detail;
   throw e;
 }
-
+ 
 function setStatus(msg, kind){
   const el = $("setupStatus");
   el.textContent = msg || "";
   el.className = "status" + (kind ? " " + kind : "");
 }
-
+ 
 function posName(type){
   return {1:"GKP",2:"DEF",3:"MID",4:"FWD"}[type] || "?";
 }
 function posClass(type){
   return {1:"gkp",2:"def",3:"mid",4:"fwd"}[type] || "";
 }
-
+ 
 // Predicted score per player: blend of season form, points-per-game and
 // next-fixture difficulty, mirroring how strong FPL managers pick a matchday XI.
 function scorePlayer(el, teamsById){
@@ -418,7 +507,7 @@ function scorePlayer(el, teamsById){
   else if(el.status === "d") score -= (100 - (el.chance_of_playing_next_round ?? 75)) * 0.05;
   return score;
 }
-
+ 
 function availabilityFlag(el){
   if(el.status === "i") return "Injured";
   if(el.status === "s") return "Suspended";
@@ -426,13 +515,13 @@ function availabilityFlag(el){
   if(el.status === "d") return "Doubt (" + (el.chance_of_playing_next_round ?? "?") + "%)";
   return null;
 }
-
+ 
 // Pick best valid formation (1 GKP always, 3-5 DEF, 2-5 MID, 1-3 FWD, 11 total)
 function pickBestXI(squadPlayers){
   const byPos = {1:[], 2:[], 3:[], 4:[]};
   squadPlayers.forEach(p => byPos[p.element_type].push(p));
   Object.values(byPos).forEach(arr => arr.sort((a,b) => b._score - a._score));
-
+ 
   const formations = [];
   for(let d=3; d<=5; d++){
     for(let m=2; m<=5; m++){
@@ -441,7 +530,7 @@ function pickBestXI(squadPlayers){
       }
     }
   }
-
+ 
   let best = null;
   for(const [d,m,f] of formations){
     if(byPos[1].length < 1 || byPos[2].length < d || byPos[3].length < m || byPos[4].length < f) continue;
@@ -456,40 +545,40 @@ function pickBestXI(squadPlayers){
       best = { xi, total, formation: [d,m,f] };
     }
   }
-
+ 
   const xiIds = new Set(best.xi.map(p => p.id));
   const bench = squadPlayers.filter(p => !xiIds.has(p.id));
   // Bench order: GK first if there's a spare GK, then by score desc
   const benchGk = bench.filter(p => p.element_type === 1);
   const benchOut = bench.filter(p => p.element_type !== 1).sort((a,b) => b._score - a._score);
   const benchOrdered = [...benchOut, ...benchGk];
-
+ 
   return { xi: best.xi, bench: benchOrdered, formation: best.formation };
 }
-
+ 
 function renderPitch(xi, formation){
   const [d,m,f] = formation;
   const byType = {1:[], 2:[], 3:[], 4:[]};
   xi.forEach(p => byType[p.element_type].push(p));
   // sort each line by score desc for consistent left-to-right display
   Object.values(byType).forEach(arr => arr.sort((a,b) => b._score - a._score));
-
+ 
   const sorted = [...xi].sort((a,b) => b._score - a._score);
   const capId = sorted[0]?.id;
   const vcapId = sorted[1]?.id;
-
+ 
   const lineHtml = (arr) => `<div class="line">${arr.map(p => playerCardHtml(p, p.id === capId, p.id === vcapId)).join("")}</div>`;
-
+ 
   $("pitch").innerHTML =
     lineHtml(byType[1]) +
     lineHtml(byType[2]) +
     lineHtml(byType[3]) +
     lineHtml(byType[4]);
-
+ 
   $("formationTxt").textContent = `${d}-${m}-${f}`;
   return { capId, vcapId };
 }
-
+ 
 function playerCardHtml(p, isCaptain, isVice){
   const flag = availabilityFlag(p);
   const teamShort = teamsById[p.team]?.short_name || "";
@@ -502,64 +591,57 @@ function playerCardHtml(p, isCaptain, isVice){
       <div class="pts">${teamShort} · ${p.ep_next ?? p.ep_this ?? "–"} xPts</div>
     </div>`;
 }
-
+ 
 function escapeHtml(s){
   return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-
+ 
 function renderBench(bench){
   $("benchRow").innerHTML = bench.map(p => playerCardHtml(p, false)).join("");
 }
-
+ 
 function renderSwaps(prevStartIds, newXiIds, allById){
-  const cameIn = newXiIds.filter(id => !prevStartIds.has(id));
-  const wentOut = [...prevStartIds].filter(id => !newXiIds.includes(id));
-
+  const cameIn = newXiIds.filter(id => !prevStartIds.has(id)).map(id => allById[id]);
+  const wentOut = [...prevStartIds].filter(id => !newXiIds.includes(id)).map(id => allById[id]);
+ 
   if(cameIn.length === 0 && wentOut.length === 0){
     $("swapCard").classList.add("hidden");
     return;
   }
   $("swapCard").classList.remove("hidden");
-
-  const pairs = [];
-  const maxLen = Math.max(cameIn.length, wentOut.length);
-  for(let i=0;i<maxLen;i++){
-    pairs.push([wentOut[i], cameIn[i]]);
+ 
+  // These are two independent sets (benched vs newly-started), not paired
+  // swaps — showing them as one list per direction avoids implying a false
+  // 1-to-1 relationship between specific players.
+  let html = "";
+  if(cameIn.length > 0){
+    html += `<div style="font-size:12px;color:var(--sub);font-weight:700;margin-bottom:6px">NOW STARTING</div>`;
+    cameIn.forEach(p => {
+      html += `<div class="swap-item"><span class="arrow">↑</span><span>${escapeHtml(p.web_name)}</span></div>`;
+    });
   }
-
-  $("swapList").innerHTML = pairs.map(([outId, inId]) => {
-    const outP = outId ? allById[outId] : null;
-    const inP = inId ? allById[inId] : null;
-    return `<div class="swap-item">
-      <span>${outP ? escapeHtml(outP.web_name) : "Bench"}</span>
-      <span class="arrow">→</span>
-      <span>${inP ? escapeHtml(inP.web_name) : "Bench"}</span>
-    </div>`;
-  }).join("");
+  if(wentOut.length > 0){
+    html += `<div style="font-size:12px;color:var(--sub);font-weight:700;margin:12px 0 6px">NOW ON BENCH</div>`;
+    wentOut.forEach(p => {
+      html += `<div class="swap-item"><span class="arrow" style="color:var(--sub)">↓</span><span>${escapeHtml(p.web_name)}</span></div>`;
+    });
+  }
+  $("swapList").innerHTML = html;
 }
-
+ 
 // ---------- Transfer suggestion ----------
-// Finds the single best replacement for the weakest squad player, within budget,
-// same position, weighing upcoming fixture difficulty alongside score.
+// Finds the best replacement for each squad player where a meaningfully
+// better, in-budget, same-position option exists. Returns every candidate
+// that clears a "worth considering" bar, sorted by projected gain.
 function fixtureDifficultyForTeam(teamId, fixtures, gwId){
   const upcoming = fixtures.filter(f => f.event === gwId && (f.team_h === teamId || f.team_a === teamId));
   if(upcoming.length === 0) return 3; // neutral if unknown
   const f = upcoming[0];
   return f.team_h === teamId ? f.team_h_difficulty : f.team_a_difficulty;
 }
-
-function suggestTransfer(squadPlayers, allElements, bank, fixtures, nextGwId){
-  const squadIds = new Set(squadPlayers.map(p => p.id));
-  // Weakest squad player by score (excluding already-flagged-out injured players get priority to replace)
-  const injuredOut = squadPlayers.filter(p => p.status === "i" || p.status === "s" || p.status === "u");
-  const candidateOut = injuredOut.length > 0
-    ? injuredOut.sort((a,b) => a._score - b._score)[0]
-    : [...squadPlayers].sort((a,b) => a._score - b._score)[0];
-
-  if(!candidateOut) return null;
-
+ 
+function bestReplacementFor(candidateOut, squadIds, allElements, bank, fixtures, nextGwId){
   const maxSpend = (candidateOut.now_cost || 0) + Math.round((bank || 0));
-
   const pool = allElements.filter(e =>
     e.element_type === candidateOut.element_type &&
     !squadIds.has(e.id) &&
@@ -567,86 +649,127 @@ function suggestTransfer(squadPlayers, allElements, bank, fixtures, nextGwId){
     e.status !== "i" && e.status !== "s" && e.status !== "u" &&
     (e.chance_of_playing_next_round === null || e.chance_of_playing_next_round >= 75)
   );
-
+ 
   let best = null;
   for(const cand of pool){
     const candScore = scorePlayer(cand, teamsById);
     const fd = fixtureDifficultyForTeam(cand.team, fixtures, nextGwId);
-    const fixtureBonus = (3 - fd) * 0.3; // easier fixture (lower FDR) nudges score up
+    const fixtureBonus = (3 - fd) * 0.3;
     const adjScore = candScore + fixtureBonus;
     if(!best || adjScore > best.adjScore){
       best = { player: cand, adjScore, rawScore: candScore };
     }
   }
-
-  if(!best) return null;
-
-  const gain = best.rawScore - candidateOut._score;
-  const isInjuryDriven = injuredOut.length > 0;
-  const worthHit = isInjuryDriven || gain > 4; // rough: a hit costs 4pts, so needs clear edge over one GW+ to justify
-
-  return {
-    out: candidateOut,
-    in: best.player,
-    gain,
-    isInjuryDriven,
-    worthHit,
-    cost: best.player.now_cost - candidateOut.now_cost
-  };
+  return best;
 }
-
-function renderTransfer(suggestion, freeTransfers){
-  if(!suggestion){
-    $("transferBody").innerHTML = `<div class="verdict no">No clear upgrade</div><p style="color:var(--sub);font-size:13px;margin:0">Your weakest player doesn't have a meaningfully better replacement in budget right now. Hold your transfer.</p>`;
+ 
+function suggestTransfers(squadPlayers, allElements, bank, fixtures, nextGwId){
+  const squadIds = new Set(squadPlayers.map(p => p.id));
+  const injuredIds = new Set(
+    squadPlayers.filter(p => p.status === "i" || p.status === "s" || p.status === "u").map(p => p.id)
+  );
+ 
+  const results = [];
+  for(const out of squadPlayers){
+    const best = bestReplacementFor(out, squadIds, allElements, bank, fixtures, nextGwId);
+    if(!best) continue;
+    const gain = best.rawScore - out._score;
+    const isInjuryDriven = injuredIds.has(out.id);
+    // Only surface genuinely worthwhile upgrades: clear score gain, or an
+    // injury/unavailable player regardless of gain size.
+    if(gain > 1.5 || isInjuryDriven){
+      results.push({
+        out,
+        in: best.player,
+        gain,
+        isInjuryDriven,
+        worthHit: isInjuryDriven || gain > 4,
+        cost: best.player.now_cost - out.now_cost
+      });
+    }
+  }
+ 
+  // Avoid suggesting the same incoming player twice, and don't let one
+  // outgoing player's replacement search collide with another suggestion's
+  // incoming player.
+  results.sort((a,b) => (b.isInjuryDriven - a.isInjuryDriven) || (b.gain - a.gain));
+  const usedIncoming = new Set();
+  const usedOutgoing = new Set();
+  const deduped = [];
+  for(const r of results){
+    if(usedIncoming.has(r.in.id) || usedOutgoing.has(r.out.id)) continue;
+    usedIncoming.add(r.in.id);
+    usedOutgoing.add(r.out.id);
+    deduped.push(r);
+  }
+  return deduped;
+}
+ 
+function renderTransfer(suggestions, freeTransfers){
+  if(!suggestions || suggestions.length === 0){
+    $("transferBody").innerHTML = `<div class="verdict no">Don't transfer — hold your squad</div><p style="color:var(--sub);font-size:13px;margin:0">Nothing in your squad has a meaningfully better, in-budget replacement right now. Save your transfer for a bigger need.</p>`;
     return;
   }
-  const { out, in: inP, gain, isInjuryDriven, worthHit } = suggestion;
-  const costText = suggestion.cost > 0 ? `+£${(suggestion.cost/10).toFixed(1)}m` : suggestion.cost < 0 ? `-£${Math.abs(suggestion.cost/10).toFixed(1)}m` : "£0.0m";
-
-  let verdictHtml;
-  if(freeTransfers > 0){
-    verdictHtml = `<div class="verdict yes">Make this transfer</div>`;
-  } else if(isInjuryDriven){
-    verdictHtml = `<div class="verdict maybe">Consider a -4 hit</div>`;
-  } else if(worthHit){
-    verdictHtml = `<div class="verdict maybe">Worth a -4 hit</div>`;
+ 
+  const freeCount = suggestions.filter(s => !s.worthHit || freeTransfers > 0).length;
+  const hitCount = suggestions.filter(s => s.worthHit && freeTransfers <= 0).length;
+ 
+  let headline;
+  if(suggestions.length === 1){
+    headline = suggestions[0].worthHit && freeTransfers <= 0
+      ? `<div class="verdict maybe">Proceed with 1 transfer (worth a hit)</div>`
+      : `<div class="verdict yes">Proceed with 1 transfer</div>`;
   } else {
-    verdictHtml = `<div class="verdict no">Not worth a hit — wait for a free transfer</div>`;
+    headline = `<div class="verdict yes">Proceed with ${suggestions.length} transfers</div>`;
   }
-
-  $("transferBody").innerHTML = `
-    ${verdictHtml}
-    <div class="transfer-row">
-      <div class="pwrap">${playerCardHtml(out, false, false)}<div style="font-size:11px;color:var(--sub);margin-top:4px">OUT</div></div>
-      <div class="transfer-arrow">→</div>
-      <div class="pwrap">${playerCardHtml(inP, false, false)}<div style="font-size:11px;color:var(--green);margin-top:4px">IN</div></div>
-    </div>
-    <div class="stat-line"><span class="k">Projected gain (per GW)</span><span class="v ${gain>=0?'pos':'neg'}">${gain>=0?'+':''}${gain.toFixed(1)} pts</span></div>
-    <div class="stat-line"><span class="k">Cost difference</span><span class="v">${costText}</span></div>
-    <div class="stat-line"><span class="k">Free transfers available</span><span class="v">${freeTransfers}</span></div>
-    ${isInjuryDriven ? `<div class="stat-line"><span class="k">Reason</span><span class="v neg">${escapeHtml(out.web_name)} is ${escapeHtml(availabilityFlag(out) || "unavailable")}</span></div>` : ""}
-  `;
+ 
+  let html = headline;
+  html += `<div class="stat-line"><span class="k">Free transfers available</span><span class="v">${freeTransfers}</span></div>`;
+  if(suggestions.length > freeTransfers && freeTransfers >= 0){
+    const hitsNeeded = Math.max(0, suggestions.length - freeTransfers);
+    if(hitsNeeded > 0){
+      html += `<div class="stat-line"><span class="k">Point hits needed</span><span class="v neg">-${hitsNeeded * 4} pts</span></div>`;
+    }
+  }
+ 
+  suggestions.forEach((s, i) => {
+    const costText = s.cost > 0 ? `+£${(s.cost/10).toFixed(1)}m` : s.cost < 0 ? `-£${Math.abs(s.cost/10).toFixed(1)}m` : "£0.0m";
+    html += `
+      <div style="margin-top:${i>0?'16px':'12px'};padding-top:${i>0?'12px':'0'};${i>0?'border-top:1px solid var(--line)':''}">
+        <div class="transfer-row">
+          <div class="pwrap">${playerCardHtml(s.out, false, false)}<div style="font-size:11px;color:var(--sub);margin-top:4px">OUT</div></div>
+          <div class="transfer-arrow">→</div>
+          <div class="pwrap">${playerCardHtml(s.in, false, false)}<div style="font-size:11px;color:var(--green);margin-top:4px">IN</div></div>
+        </div>
+        <div class="stat-line"><span class="k">Projected gain (per GW)</span><span class="v ${s.gain>=0?'pos':'neg'}">${s.gain>=0?'+':''}${s.gain.toFixed(1)} pts</span></div>
+        <div class="stat-line"><span class="k">Cost difference</span><span class="v">${costText}</span></div>
+        ${s.isInjuryDriven ? `<div class="stat-line"><span class="k">Reason</span><span class="v neg">${escapeHtml(s.out.web_name)} is ${escapeHtml(availabilityFlag(s.out) || "unavailable")}</span></div>` : ""}
+      </div>
+    `;
+  });
+ 
+  $("transferBody").innerHTML = html;
 }
-
+ 
 // ---------- Chip advice ----------
 function suggestChip(chipsUsed, squadPlayers, xi, bench, fixtures, nextGwId, bank, freeTransfers){
   const has = (name) => !chipsUsed.includes(name);
-
+ 
   // Bench Boost: strong when bench players are also strong scorers
   const benchScore = bench.reduce((s,p) => s + Math.max(0, p._score), 0);
   const xiAvgScore = xi.reduce((s,p) => s + Math.max(0, p._score), 0) / xi.length;
-
+ 
   // Triple Captain: strong when your captain pick has a very easy fixture and high score
   const sortedXi = [...xi].sort((a,b) => b._score - a._score);
   const topPlayer = sortedXi[0];
   const capFixtureDiff = topPlayer ? fixtureDifficultyForTeam(topPlayer.team, fixtures, nextGwId) : 3;
-
+ 
   // Wildcard: strong when several squad players are flagged/injured or badly out of form
   const injuredCount = squadPlayers.filter(p => availabilityFlag(p)).length;
   const poorFormCount = squadPlayers.filter(p => parseFloat(p.form || "0") < 2).length;
-
+ 
   const candidates = [];
-
+ 
   if(has("bboost") && benchScore >= xiAvgScore * 2.2){
     candidates.push({
       chip: "Bench Boost",
@@ -654,7 +777,7 @@ function suggestChip(chipsUsed, squadPlayers, xi, bench, fixtures, nextGwId, ban
       reason: `Your bench is unusually strong right now (combined ~${benchScore.toFixed(1)} projected pts) — a good week to play every player.`
     });
   }
-
+ 
   if(has("3xc") && topPlayer && topPlayer._score >= 6 && capFixtureDiff <= 2){
     candidates.push({
       chip: "Triple Captain",
@@ -662,7 +785,7 @@ function suggestChip(chipsUsed, squadPlayers, xi, bench, fixtures, nextGwId, ban
       reason: `${escapeHtml(topPlayer.web_name)} has a strong projection (${topPlayer._score.toFixed(1)}) and an easy fixture (difficulty ${capFixtureDiff}/5) this gameweek.`
     });
   }
-
+ 
   if(has("wildcard") && (injuredCount >= 3 || poorFormCount >= 4)){
     candidates.push({
       chip: "Wildcard",
@@ -670,7 +793,7 @@ function suggestChip(chipsUsed, squadPlayers, xi, bench, fixtures, nextGwId, ban
       reason: `${injuredCount} squad player(s) flagged and ${poorFormCount} in poor form — a full rebuild would likely outperform patching one transfer at a time.`
     });
   }
-
+ 
   if(has("freehit") && injuredCount >= 2 && freeTransfers <= 1){
     candidates.push({
       chip: "Free Hit",
@@ -678,12 +801,12 @@ function suggestChip(chipsUsed, squadPlayers, xi, bench, fixtures, nextGwId, ban
       reason: `Multiple players unavailable this week with limited free transfers — Free Hit lets you field a full-strength XI for just this gameweek without permanent changes.`
     });
   }
-
+ 
   if(candidates.length === 0) return null;
   candidates.sort((a,b) => b.strength - a.strength);
   return candidates[0];
 }
-
+ 
 function renderChip(rec, chipsUsed){
   const allChips = [
     {key:"wildcard", label:"Wildcard"},
@@ -693,7 +816,7 @@ function renderChip(rec, chipsUsed){
   ];
   const usedLabels = allChips.filter(c => chipsUsed.includes(c.key)).map(c => c.label);
   const availableLabels = allChips.filter(c => !chipsUsed.includes(c.key)).map(c => c.label);
-
+ 
   let body;
   if(rec){
     body = `
@@ -706,43 +829,44 @@ function renderChip(rec, chipsUsed){
       <p style="color:var(--sub);font-size:13px;margin:0 0 10px">Nothing stands out enough to justify a chip this gameweek — save them for a better opportunity (e.g. a double gameweek or a run of easy fixtures).</p>
     `;
   }
-
+ 
   body += `<div class="stat-line"><span class="k">Chips used</span><span class="v">${usedLabels.length ? usedLabels.join(", ") : "None"}</span></div>`;
   body += `<div class="stat-line"><span class="k">Still available</span><span class="v pos">${availableLabels.length ? availableLabels.join(", ") : "None"}</span></div>`;
-
+ 
   $("chipBody").innerHTML = body;
 }
-
+ 
 // ---------- Mini league rival comparison ----------
-async function loadRivalComparison(leagueId, myEntryId, myTotalPoints){
+async function loadRivalComparison(leagueId, myEntryId){
   try{
     const standings = await fplFetch(`/leagues-classic/${leagueId}/standings/`);
     const results = standings?.standings?.results || [];
     if(results.length === 0) return null;
-
+ 
     const me = results.find(r => r.entry === Number(myEntryId));
     const sorted = [...results].sort((a,b) => b.total - a.total);
-    const top5 = sorted.slice(0, 5);
     const leagueName = standings.league?.name || "Mini League";
-
-    return { leagueName, top5, me, size: results.length };
+ 
+    return { leagueId, leagueName, sorted, me, size: results.length };
   }catch(err){
     console.error("League fetch failed", err);
-    return null;
+    return { leagueId, leagueName: `League ${leagueId}`, error: true };
   }
 }
-
-function renderRivals(data){
-  if(!data){
-    $("rivalCard").classList.add("hidden");
-    return;
+ 
+let rivalLeagueData = []; // holds all loaded leagues' data for expand/collapse
+ 
+function renderOneLeague(data, expanded){
+  if(data.error){
+    return `<div class="stat-line"><span class="k">${escapeHtml(data.leagueName)}</span><span class="v neg">Couldn't load</span></div>`;
   }
-  $("rivalCard").classList.remove("hidden");
-  const { leagueName, top5, me, size } = data;
-
-  let html = `<div class="sub" style="margin-bottom:10px">${escapeHtml(leagueName)} · ${size} managers</div>`;
-
-  top5.forEach((r, i) => {
+  const { leagueName, sorted, me, size, leagueId } = data;
+  const showCount = expanded ? sorted.length : Math.min(10, sorted.length);
+  const shown = sorted.slice(0, showCount);
+ 
+  let html = `<div class="sub" style="margin:14px 0 10px;font-weight:700">${escapeHtml(leagueName)} · ${size} managers</div>`;
+ 
+  shown.forEach((r, i) => {
     const isMe = me && r.entry === me.entry;
     html += `<div class="rival-row ${isMe ? 'me' : ''}">
       <span class="rk">${i+1}</span>
@@ -750,28 +874,61 @@ function renderRivals(data){
       <span class="rp">${r.total}</span>
     </div>`;
   });
-
-  if(me && !top5.some(r => r.entry === me.entry)){
-    const leader = top5[0];
-    const gap = leader.total - me.total;
+ 
+  if(me && !shown.some(r => r.entry === me.entry)){
     html += `<div class="rival-row me" style="margin-top:8px">
       <span class="rk">${me.rank}</span>
       <span class="rn">${escapeHtml(me.entry_name)} (you)</span>
       <span class="rp">${me.total}</span>
     </div>`;
-    html += `<div class="rival-diff">${gap} points behind the league leader.</div>`;
-  } else if(me && top5[0] && me.entry === top5[0].entry){
-    html += `<div class="rival-diff" style="margin-top:8px">You're leading your mini league — the best long-run strategy is minimizing risk: avoid speculative hits and chase differentials only when behind.</div>`;
-  } else if(me){
-    const leader = top5[0];
-    const gap = leader.total - me.total;
-    html += `<div class="rival-diff" style="margin-top:8px">${gap} points behind 1st place. To close the gap long-term, prioritize consistent captaincy over risky differentials unless the gap widens significantly.</div>`;
   }
-
-  $("rivalBody").innerHTML = html;
+ 
+  if(sorted.length > 10){
+    html += `<button class="ghost" style="width:100%;margin-top:10px" data-league-toggle="${leagueId}">${expanded ? "View less" : `View all ${size}`}</button>`;
+  }
+ 
+  if(me){
+    const leader = sorted[0];
+    if(leader.entry === me.entry){
+      html += `<div class="rival-diff" style="margin-top:8px">You're leading this league — the best long-run strategy is minimizing risk: avoid speculative hits and chase differentials only when behind.</div>`;
+    } else {
+      const gap = leader.total - me.total;
+      html += `<div class="rival-diff" style="margin-top:8px">${gap} points behind 1st place (${escapeHtml(leader.entry_name)}). To close the gap long-term, prioritize consistent captaincy over risky differentials unless the gap widens significantly.</div>`;
+    }
+  }
+ 
+  return html;
 }
-
-
+ 
+function renderRivals(allLeagueData){
+  rivalLeagueData = allLeagueData;
+  if(!allLeagueData || allLeagueData.length === 0){
+    $("rivalCard").classList.add("hidden");
+    return;
+  }
+  $("rivalCard").classList.remove("hidden");
+  renderRivalsHtml();
+}
+ 
+const expandedLeagues = new Set();
+ 
+function renderRivalsHtml(){
+  let html = "";
+  rivalLeagueData.forEach(data => {
+    html += renderOneLeague(data, expandedLeagues.has(String(data.leagueId)));
+  });
+  $("rivalBody").innerHTML = html;
+  $("rivalBody").querySelectorAll("[data-league-toggle]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-league-toggle");
+      if(expandedLeagues.has(id)) expandedLeagues.delete(id);
+      else expandedLeagues.add(id);
+      renderRivalsHtml();
+    });
+  });
+}
+ 
+ 
 async function loadTeam(){
   const teamIdRaw = $("teamId").value.trim();
   if(!teamIdRaw || !/^\d+$/.test(teamIdRaw)){
@@ -779,12 +936,11 @@ async function loadTeam(){
     return;
   }
   const teamId = teamIdRaw;
-  const leagueIdRaw = $("leagueId").value.trim() || "";
-
+ 
   $("loadBtn").disabled = true;
   setStatus('<span class="spinner"></span> Fetching live FPL data…');
   $("setupStatus").innerHTML = '<span class="spinner"></span> Fetching live FPL data…';
-
+ 
   try{
     if(!bootstrap){
       bootstrap = await fplFetch("/bootstrap-static/");
@@ -793,13 +949,13 @@ async function loadTeam(){
       elementsById = {};
       bootstrap.elements.forEach(e => elementsById[e.id] = e);
     }
-
+ 
     const events = bootstrap.events;
     const currentEvent = events.find(e => e.is_current) || events.find(e => e.is_next);
     const nextEvent = events.find(e => e.is_next) || currentEvent;
     const gwForPicks = currentEvent ? currentEvent.id : (nextEvent ? nextEvent.id - 1 : 1);
     const nextGwId = nextEvent ? nextEvent.id : gwForPicks;
-
+ 
     const entry = await fplFetch(`/entry/${teamId}/`);
     let picksData;
     try{
@@ -807,56 +963,63 @@ async function loadTeam(){
     }catch(e){
       picksData = await fplFetch(`/entry/${teamId}/event/${Math.max(1, gwForPicks-1)}/picks/`);
     }
-
+ 
     const historyData = await fplFetch(`/entry/${teamId}/history/`).catch(() => null);
     const fixturesData = await fplFetch(`/fixtures/?event=${nextGwId}`).catch(() => []);
-
+ 
     const squadPlayers = picksData.picks.map(pk => {
       const base = elementsById[pk.element];
       return { ...base, _score: scorePlayer(base, teamsById), _wasStarter: pk.position <= 11 };
     });
-
+ 
     const prevStartIds = new Set(picksData.picks.filter(pk => pk.position <= 11).map(pk => pk.element));
-
+ 
     const { xi, bench, formation } = pickBestXI(squadPlayers);
-
+ 
     // Render
     $("mgrTeamName").textContent = entry.name || "Your team";
     $("mgrSub").textContent = `${entry.player_first_name || ""} ${entry.player_last_name || ""} · GW${gwForPicks}`.trim();
     $("gwPill").textContent = `GW ${nextGwId}`;
-
+ 
     renderPitch(xi, formation);
     renderBench(bench);
     renderSwaps(prevStartIds, xi.map(p=>p.id), elementsById);
-
+ 
     const flagged = [...xi, ...bench].filter(p => availabilityFlag(p));
     $("methodNote").innerHTML = `<b>How this XI was picked:</b> ranked every player in your 15 by FPL's next-gameweek expected points, blended with season form and points-per-game, then chose the highest-scoring valid formation (1 GKP, 3–5 DEF, 2–5 MID, 1–3 FWD). Captain and vice-captain are your top two scorers.` +
       (flagged.length ? `<br><br><b>Flagged:</b> ${flagged.map(p => escapeHtml(p.web_name) + " (" + availabilityFlag(p) + ")").join(", ")}` : "");
-
-    // Transfer suggestion
+ 
+    // Transfer suggestion(s)
     const bank = entry.last_deadline_bank ?? 0;
-    const freeTransfers = entry.last_deadline_total_transfers !== undefined
-      ? Math.max(1, (historyData?.current?.slice(-1)[0]?.event_transfers_cost === 0 ? 1 : 1))
+    const lastGw = historyData?.current?.slice(-1)[0];
+    const freeTransfers = lastGw?.event_transfers !== undefined
+      ? Math.max(0, 1 + (1 - (lastGw.event_transfers || 0))) // rough estimate; FPL doesn't expose "free transfers" directly
       : 1;
     const allElements = bootstrap.elements;
-    const transferSuggestion = suggestTransfer(squadPlayers, allElements, bank, fixturesData, nextGwId);
-    renderTransfer(transferSuggestion, freeTransfers);
-
+    const transferSuggestions = suggestTransfers(squadPlayers, allElements, bank, fixturesData, nextGwId);
+    renderTransfer(transferSuggestions, Math.max(1, freeTransfers));
+ 
     // Chip advice
     const chipsUsed = (historyData?.chips || []).map(c => c.name);
     const chipRec = suggestChip(chipsUsed, squadPlayers, xi, bench, fixturesData, nextGwId, bank, freeTransfers);
     renderChip(chipRec, chipsUsed);
-
-    // Mini league comparison
-    const leagueId = leagueIdRaw || DEFAULT_LEAGUE_ID;
-    if(leagueId){
-      const myTotalPoints = historyData?.current?.slice(-1)[0]?.total_points ?? entry.summary_overall_points ?? 0;
-      const rivalData = await loadRivalComparison(leagueId, teamId, myTotalPoints);
-      renderRivals(rivalData);
+ 
+    // Mini league comparison — all checked leagues, loaded in parallel
+    const leagueIds = getCheckedLeagueIds();
+    if(leagueIds.length > 0){
+      const allLeagueData = await Promise.all(
+        leagueIds.map(id => loadRivalComparison(id, teamId))
+      );
+      renderRivals(allLeagueData.filter(Boolean));
     } else {
       $("rivalCard").classList.add("hidden");
     }
-
+ 
+    // Deadline countdown
+    if(nextEvent && nextEvent.deadline_time){
+      startDeadlineCountdown(nextEvent.deadline_time);
+    }
+ 
     $("setupCard").classList.add("hidden");
     $("resultArea").classList.remove("hidden");
     setStatus("");
@@ -869,14 +1032,20 @@ async function loadTeam(){
     $("loadBtn").disabled = false;
   }
 }
-
+ 
+renderLeagueChecks();
 $("loadBtn").addEventListener("click", loadTeam);
 $("teamId").addEventListener("keydown", (e) => { if(e.key === "Enter") loadTeam(); });
-$("leagueId").addEventListener("keydown", (e) => { if(e.key === "Enter") loadTeam(); });
+$("addLeagueBtn").addEventListener("click", () => {
+  SAVED_LEAGUE_IDS.push("");
+  renderLeagueChecks();
+});
 $("changeTeamBtn").addEventListener("click", () => {
   $("resultArea").classList.add("hidden");
   $("setupCard").classList.remove("hidden");
 });
+ 
 </script>
 </body>
 </html>
+ 
