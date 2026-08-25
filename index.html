@@ -326,7 +326,7 @@
     </div>
  
     <div class="card" id="swapCard">
-      <h2>Changes vs your current lineup</h2>
+      <h2>Why these lineup changes</h2>
       <div class="swap-list" id="swapList"></div>
     </div>
  
@@ -373,12 +373,17 @@ let elementsById = null;
 const $ = (id) => document.getElementById(id);
  
 // ---------- League selector UI ----------
+const leagueNameCache = {}; // id -> name, populated lazily so the setup form shows real league names
+ 
 function renderLeagueChecks(){
   const container = $("leagueChecks");
   container.innerHTML = SAVED_LEAGUE_IDS.map((id, i) => `
     <label class="league-row">
       <input type="checkbox" data-league-id="${escapeHtml(id)}" ${i < 4 ? "checked" : ""}>
-      <input type="text" value="${escapeHtml(id)}" inputmode="numeric" data-league-input="${i}">
+      <div style="flex:1;min-width:0">
+        <input type="text" value="${escapeHtml(id)}" inputmode="numeric" data-league-input="${i}">
+        <div class="league-name-label" data-league-name-for="${escapeHtml(id)}" style="font-size:11px;color:var(--sub);margin-top:2px">${leagueNameCache[id] ? escapeHtml(leagueNameCache[id]) : ""}</div>
+      </div>
       <button type="button" class="remove-league" data-remove-idx="${i}">✕</button>
     </label>
   `).join("");
@@ -386,9 +391,11 @@ function renderLeagueChecks(){
   container.querySelectorAll("[data-league-input]").forEach(input => {
     input.addEventListener("change", () => {
       const idx = Number(input.getAttribute("data-league-input"));
-      SAVED_LEAGUE_IDS[idx] = input.value.trim();
-      const checkbox = input.parentElement.querySelector("input[type=checkbox]");
-      if(checkbox) checkbox.setAttribute("data-league-id", input.value.trim());
+      const newId = input.value.trim();
+      SAVED_LEAGUE_IDS[idx] = newId;
+      const checkbox = input.parentElement.parentElement.querySelector("input[type=checkbox]");
+      if(checkbox) checkbox.setAttribute("data-league-id", newId);
+      fetchLeagueNameFor(newId);
     });
   });
   container.querySelectorAll("[data-remove-idx]").forEach(btn => {
@@ -398,6 +405,28 @@ function renderLeagueChecks(){
       renderLeagueChecks();
     });
   });
+ 
+  // Fetch names for any IDs we don't have cached yet, without blocking the UI.
+  SAVED_LEAGUE_IDS.forEach(id => {
+    if(id && /^\d+$/.test(id) && !leagueNameCache[id]) fetchLeagueNameFor(id);
+  });
+}
+ 
+async function fetchLeagueNameFor(id){
+  if(!id || !/^\d+$/.test(id) || leagueNameCache[id]) return;
+  try{
+    const standings = await fplFetch(`/leagues-classic/${id}/standings/`);
+    const name = standings?.league?.name;
+    if(name){
+      leagueNameCache[id] = name;
+      document.querySelectorAll(`[data-league-name-for="${id}"]`).forEach(el => {
+        el.textContent = name;
+      });
+    }
+  }catch(err){
+    // Silently ignore — the ID might be invalid or the network unavailable;
+    // the user will still see the raw ID in the input.
+  }
 }
  
 function getCheckedLeagueIds(){
@@ -621,22 +650,56 @@ function renderSwaps(prevStartIds, newXiIds, allById){
   }
   $("swapCard").classList.remove("hidden");
  
-  // These are two independent sets (benched vs newly-started), not paired
-  // swaps — showing them as one list per direction avoids implying a false
-  // 1-to-1 relationship between specific players.
+  // Pair players by position where possible (a benched DEF's "reason" is best
+  // told against a starting DEF, not a random cross-position comparison),
+  // then show the projected-points gap that actually drove the change —
+  // this is what makes the section useful instead of just repeating the pitch.
+  const wentOutByPos = {1:[], 2:[], 3:[], 4:[]};
+  wentOut.forEach(p => wentOutByPos[p.element_type].push(p));
+  Object.values(wentOutByPos).forEach(arr => arr.sort((a,b) => projectedPoints(b) - projectedPoints(a)));
+ 
+  const cameInByPos = {1:[], 2:[], 3:[], 4:[]};
+  cameIn.forEach(p => cameInByPos[p.element_type].push(p));
+  Object.values(cameInByPos).forEach(arr => arr.sort((a,b) => projectedPoints(b) - projectedPoints(a)));
+ 
+  const pairs = [];
+  const usedOut = new Set();
+  [1,2,3,4].forEach(pos => {
+    const ins = cameInByPos[pos] || [];
+    const outs = [...(wentOutByPos[pos] || [])];
+    ins.forEach((inP, i) => {
+      const outP = outs[i] || null;
+      if(outP) usedOut.add(outP.id);
+      pairs.push({ inP, outP });
+    });
+  });
+  // Any leftover benched players with no same-position starter pairing
+  // (can happen across formation changes) get listed with no comparison.
+  wentOut.filter(p => !usedOut.has(p.id)).forEach(outP => {
+    pairs.push({ inP: null, outP });
+  });
+ 
   let html = "";
-  if(cameIn.length > 0){
-    html += `<div style="font-size:12px;color:var(--sub);font-weight:700;margin-bottom:6px">NOW STARTING</div>`;
-    cameIn.forEach(p => {
-      html += `<div class="swap-item"><span class="arrow">↑</span><span>${escapeHtml(p.web_name)}</span></div>`;
-    });
-  }
-  if(wentOut.length > 0){
-    html += `<div style="font-size:12px;color:var(--sub);font-weight:700;margin:12px 0 6px">NOW ON BENCH</div>`;
-    wentOut.forEach(p => {
-      html += `<div class="swap-item"><span class="arrow" style="color:var(--sub)">↓</span><span>${escapeHtml(p.web_name)}</span></div>`;
-    });
-  }
+  pairs.forEach(({ inP, outP }) => {
+    if(inP && outP){
+      const gap = projectedPoints(inP) - projectedPoints(outP);
+      const reason = availabilityFlag(outP)
+        ? `${escapeHtml(outP.web_name)} is ${escapeHtml(availabilityFlag(outP))}`
+        : `${gap >= 0 ? '+' : ''}${gap.toFixed(1)} pts higher projection`;
+      html += `<div class="swap-item" style="flex-direction:column;align-items:flex-start;gap:2px">
+        <div style="display:flex;justify-content:space-between;width:100%">
+          <span>${escapeHtml(inP.web_name)} <span style="color:var(--sub)">over</span> ${escapeHtml(outP.web_name)}</span>
+          <span class="${gap>=0?'':''}" style="color:${gap>=0?'var(--green)':'var(--red)'};font-weight:700">${gap>=0?'+':''}${gap.toFixed(1)}</span>
+        </div>
+        <div style="font-size:11px;color:var(--sub)">${reason}</div>
+      </div>`;
+    } else if(inP){
+      html += `<div class="swap-item"><span class="arrow">↑</span><span>${escapeHtml(inP.web_name)} added to starting XI</span></div>`;
+    } else if(outP){
+      html += `<div class="swap-item"><span class="arrow" style="color:var(--sub)">↓</span><span>${escapeHtml(outP.web_name)} moved to bench</span></div>`;
+    }
+  });
+ 
   $("swapList").innerHTML = html;
 }
  
