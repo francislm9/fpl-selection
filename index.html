@@ -245,6 +245,29 @@
     font-size:16px;cursor:pointer;padding:0 4px;
   }
  
+  .scout-link{
+    display:block;
+    padding:10px 0;border-bottom:1px solid var(--line);
+    color:var(--text);text-decoration:none;
+  }
+  .scout-link:last-child{border-bottom:none;}
+  .scout-link .title{font-size:13.5px;font-weight:600;line-height:1.4;}
+  .scout-link .src{font-size:11px;color:var(--sub);margin-top:3px;}
+ 
+  .strategy-item{
+    display:flex;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--line);
+  }
+  .strategy-item:last-child{border-bottom:none;}
+  .strategy-item .num{
+    flex:0 0 auto;width:22px;height:22px;border-radius:50%;
+    background:var(--panel2);color:var(--green);
+    font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .strategy-item .txt{font-size:13.5px;line-height:1.5;}
+  .strategy-item .txt b{color:var(--text);}
+ 
   .note{
     font-size:12.5px;
     color:var(--sub);
@@ -343,6 +366,16 @@
     <div class="card hidden" id="rivalCard">
       <h2>Your mini league</h2>
       <div id="rivalBody"></div>
+    </div>
+ 
+    <div class="card hidden" id="strategyCard">
+      <h2>Strategy to win your league</h2>
+      <div id="strategyBody"></div>
+    </div>
+ 
+    <div class="card hidden" id="scoutCard">
+      <h2>Fantasy Football Scout — this gameweek</h2>
+      <div id="scoutBody"></div>
     </div>
  
     <div class="note" id="methodNote"></div>
@@ -1006,6 +1039,113 @@ function renderRivalsHtml(){
   });
 }
  
+// ---------- Strategy advice ----------
+// Synthesizes rank/points gap (from mini league standings), gameweeks
+// remaining in the season, chip availability, and squad state into concrete,
+// prioritized actions — not generic tips repeated every week.
+function buildStrategyAdvice(allLeagueData, chipsUsed, freeTransfers, bank, gwsRemaining, squadPlayers){
+  const items = [];
+  const validLeagues = (allLeagueData || []).filter(d => d && !d.error && d.me);
+ 
+  if(validLeagues.length === 0){
+    items.push({ text: "Add a mini league ID above to get standings-based strategy advice tailored to your rank." });
+    return items;
+  }
+ 
+  // Find the tightest and largest gaps across all tracked leagues to decide
+  // overall posture (protect a lead vs chase a gap).
+  let anyLeading = false;
+  let worstGapInfo = null;
+  validLeagues.forEach(d => {
+    const leader = d.sorted[0];
+    const gap = leader.total - d.me.total;
+    if(gap <= 0) anyLeading = true;
+    if(!worstGapInfo || gap > worstGapInfo.gap){
+      worstGapInfo = { gap, leagueName: d.leagueName, leaderName: leader.entry_name };
+    }
+  });
+ 
+  const lateGWs = gwsRemaining <= 8;
+  const veryLateGWs = gwsRemaining <= 4;
+ 
+  if(anyLeading){
+    items.push({ text: `You're <b>leading</b> at least one tracked league. Protect the lead: avoid speculative -4 hits, and only play a chip when the upside clearly outweighs the risk of a rival's differential paying off.` });
+  }
+ 
+  if(worstGapInfo && worstGapInfo.gap > 0){
+    if(worstGapInfo.gap <= 15){
+      items.push({ text: `${worstGapInfo.gap} points behind 1st in <b>${escapeHtml(worstGapInfo.leagueName)}</b> — a close gap. Small, high-conviction differentials (a nailed starter your rivals likely don't own) are a better risk/reward than a big punt right now.` });
+    } else if(worstGapInfo.gap <= 40){
+      items.push({ text: `${worstGapInfo.gap} points behind 1st in <b>${escapeHtml(worstGapInfo.leagueName)}</b>. Consider templating your safe picks (captain, GK, top defenders) but using 1-2 squad slots for genuine differentials to create separation.` });
+    } else {
+      items.push({ text: `${worstGapInfo.gap} points behind 1st in <b>${escapeHtml(worstGapInfo.leagueName)}</b> — a large gap. ${veryLateGWs ? "With few gameweeks left, this likely needs a bold chip + differential-heavy gameweek to close meaningfully." : "You have time to be patient, but should start taking calculated risks rather than playing it safe."}` });
+    }
+  }
+ 
+  // Chip usage nudge
+  const allChips = ["wildcard", "freehit", "bboost", "3xc"];
+  const chipsLeft = allChips.filter(c => !chipsUsed.includes(c));
+  if(chipsLeft.length >= 3 && lateGWs){
+    items.push({ text: `You still have <b>${chipsLeft.length} chips unused</b> with only ~${gwsRemaining} gameweeks left in the season. Unused chips are wasted value — start planning which gameweeks to deploy them.` });
+  }
+ 
+  // Injury/flagged player nudge tied to standings context
+  const flaggedCount = squadPlayers.filter(p => availabilityFlag(p)).length;
+  if(flaggedCount > 0){
+    items.push({ text: `${flaggedCount} squad player${flaggedCount>1?'s':''} currently flagged. Resolving this with your transfer(s) protects points floor — especially important if you're defending a league lead.` });
+  }
+ 
+  // Free transfer banking nudge
+  if(freeTransfers >= 2){
+    items.push({ text: `You're banking ${freeTransfers} free transfers. Consider using at least one soon — banked transfers don't directly help your rank, and squad improvements compound over the remaining gameweeks.` });
+  }
+ 
+  if(bank >= 15){
+    items.push({ text: `£${(bank/10).toFixed(1)}m sitting unused in the bank. Consider a value-adding transfer — idle funds don't score points.` });
+  }
+ 
+  if(items.length === 0){
+    items.push({ text: "Your squad and chip usage look well-optimized right now. Keep monitoring fixtures and form week to week." });
+  }
+ 
+  return items;
+}
+ 
+function renderStrategy(items){
+  if(!items || items.length === 0){
+    $("strategyCard").classList.add("hidden");
+    return;
+  }
+  $("strategyCard").classList.remove("hidden");
+  $("strategyBody").innerHTML = items.map((item, i) => `
+    <div class="strategy-item">
+      <div class="num">${i+1}</div>
+      <div class="txt">${item.text}</div>
+    </div>
+  `).join("");
+}
+ 
+// ---------- Fantasy Football Scout sentiment ----------
+// Their homepage/article content isn't reliably scrapable from a live
+// client-side app, so this links straight to FFScout's own category pages —
+// these always show the current gameweek's latest content at the top, and
+// this respects their site rather than scraping it.
+function renderScout(){
+  const links = [
+    { title: "Scout Picks — this gameweek's best team", url: "https://www.fantasyfootballscout.co.uk/category/team-selection/scout-picks" },
+    { title: "Captain Poll — who to armband this week", url: "https://www.fantasyfootballscout.co.uk/category/team-selection/captain-poll" },
+    { title: "Latest Team News & injuries", url: "https://www.fantasyfootballscout.co.uk/category/team-news" },
+    { title: "Predicted line-ups", url: "https://www.fantasyfootballscout.co.uk/team-news" }
+  ];
+  $("scoutCard").classList.remove("hidden");
+  $("scoutBody").innerHTML = links.map(l => `
+    <a class="scout-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">
+      <div class="title">${escapeHtml(l.title)}</div>
+      <div class="src">Fantasy Football Scout ↗</div>
+    </a>
+  `).join("");
+}
+ 
  
 async function loadTeam(){
   const teamIdRaw = $("teamId").value.trim();
@@ -1084,14 +1224,24 @@ async function loadTeam(){
  
     // Mini league comparison — all checked leagues, loaded in parallel
     const leagueIds = getCheckedLeagueIds();
+    let allLeagueDataClean = [];
     if(leagueIds.length > 0){
       const allLeagueData = await Promise.all(
         leagueIds.map(id => loadRivalComparison(id, teamId))
       );
-      renderRivals(allLeagueData.filter(Boolean));
+      allLeagueDataClean = allLeagueData.filter(Boolean);
+      renderRivals(allLeagueDataClean);
     } else {
       $("rivalCard").classList.add("hidden");
     }
+ 
+    // Strategy advice — synthesizes standings gap, chips, transfers, bank
+    const gwsRemaining = Math.max(0, 38 - nextGwId + 1);
+    const strategyItems = buildStrategyAdvice(allLeagueDataClean, chipsUsed, Math.max(1, freeTransfers), bank, gwsRemaining, squadPlayers);
+    renderStrategy(strategyItems);
+ 
+    // Fantasy Football Scout — direct links to their current-GW pages
+    renderScout();
  
     // Deadline countdown
     if(nextEvent && nextEvent.deadline_time){
