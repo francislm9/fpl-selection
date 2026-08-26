@@ -159,6 +159,7 @@
   .pcard .pos.fwd{background:#e8543d;}
   .pcard .nm{font-size:11.5px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pcard .pts{font-size:10px;color:#666;margin-top:1px;}
+  .pcard .opp{font-size:9.5px;color:#8b98a8;margin-top:1px;font-weight:600;}
   .pcard.flag{outline:1.5px solid var(--amber);}
  
   /* Bench */
@@ -268,6 +269,24 @@
   .strategy-item .txt{font-size:13.5px;line-height:1.5;}
   .strategy-item .txt b{color:var(--text);}
  
+  .diff-player-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 0;border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .diff-player-row:last-child{border-bottom:none;}
+  .diff-tag{
+    font-size:10px;font-weight:800;letter-spacing:0.03em;
+    padding:2px 7px;border-radius:10px;text-transform:uppercase;
+  }
+  .diff-tag.low{background:rgba(0,255,135,0.15);color:var(--green);}
+  .diff-tag.template{background:rgba(139,152,168,0.15);color:var(--sub);}
+  .rival-select{
+    width:100%;background:var(--panel2);border:1px solid var(--line);
+    color:var(--text);padding:9px 10px;border-radius:8px;font-size:14px;
+    margin-bottom:12px;
+  }
+ 
   .note{
     font-size:12.5px;
     color:var(--sub);
@@ -376,6 +395,11 @@
     <div class="card hidden" id="scoutCard">
       <h2>Fantasy Football Scout — this gameweek</h2>
       <div id="scoutBody"></div>
+    </div>
+ 
+    <div class="card hidden" id="diffCard">
+      <h2>Players in common with rivals</h2>
+      <div id="diffBody"></div>
     </div>
  
     <div class="note" id="methodNote"></div>
@@ -652,9 +676,13 @@ function renderPitch(xi, formation){
   return { capId, vcapId };
 }
  
+let latestFixturesData = [];
+let latestNextGwId = null;
+ 
 function playerCardHtml(p, isCaptain, isVice){
   const flag = availabilityFlag(p);
   const teamShort = teamsById[p.team]?.short_name || "";
+  const oppText = fixtureOpponentText(p.team, latestFixturesData, latestNextGwId);
   return `
     <div class="pcard ${flag ? "flag" : ""}">
       ${isCaptain ? '<div class="cap">C</div>' : ""}
@@ -662,6 +690,7 @@ function playerCardHtml(p, isCaptain, isVice){
       <div class="pos ${posClass(p.element_type)}">${posName(p.element_type)}</div>
       <div class="nm">${escapeHtml(p.web_name)}</div>
       <div class="pts">${teamShort} · ${p.ep_next ?? p.ep_this ?? "–"} xPts</div>
+      ${oppText ? `<div class="opp">${escapeHtml(oppText)}</div>` : ""}
     </div>`;
 }
  
@@ -747,6 +776,20 @@ function fixtureDifficultyForTeam(teamId, fixtures, gwId){
   return f.team_h === teamId ? f.team_h_difficulty : f.team_a_difficulty;
 }
  
+// Returns a short "vs ARS (H)" / "@ ARS" style string for the given team's
+// next fixture, so transfer targets and squad cards can show who they play.
+function fixtureOpponentText(teamId, fixtures, gwId){
+  if(!fixtures || !gwId) return "";
+  const upcoming = fixtures.filter(f => f.event === gwId && (f.team_h === teamId || f.team_a === teamId));
+  if(upcoming.length === 0) return "";
+  return upcoming.map(f => {
+    const isHome = f.team_h === teamId;
+    const oppId = isHome ? f.team_a : f.team_h;
+    const oppShort = teamsById?.[oppId]?.short_name || "?";
+    return isHome ? `vs ${oppShort} (H)` : `@ ${oppShort} (A)`;
+  }).join(", ");
+}
+ 
 function bestReplacementFor(candidateOut, squadIds, allElements, bank, fixtures, nextGwId){
   const maxSpend = (candidateOut.now_cost || 0) + Math.round((bank || 0));
   const pool = allElements.filter(e =>
@@ -822,31 +865,41 @@ function renderTransfer(suggestions, freeTransfers){
     return;
   }
  
-  const freeCount = suggestions.filter(s => !s.worthHit || freeTransfers > 0).length;
-  const hitCount = suggestions.filter(s => s.worthHit && freeTransfers <= 0).length;
+  // Cap total suggestions so the hit never exceeds -4: you get your free
+  // transfers, plus at most ONE paid transfer. Suggestions are already
+  // sorted by importance (injury-driven first, then biggest projected
+  // gain), so capping the list keeps only the most important ones.
+  const maxSuggestions = Math.max(1, freeTransfers) + 1;
+  const capped = suggestions.slice(0, maxSuggestions);
+  const paidCount = Math.max(0, capped.length - freeTransfers);
+  const hitPoints = Math.min(4, paidCount * 4); // never more than one -4 hit
  
   let headline;
-  if(suggestions.length === 1){
-    headline = suggestions[0].worthHit && freeTransfers <= 0
-      ? `<div class="verdict maybe">Proceed with 1 transfer (worth a hit)</div>`
+  if(capped.length === 1){
+    headline = (capped[0].worthHit && freeTransfers <= 0)
+      ? `<div class="verdict maybe">Proceed with 1 transfer (-4 hit)</div>`
       : `<div class="verdict yes">Proceed with 1 transfer</div>`;
   } else {
-    headline = `<div class="verdict yes">Proceed with ${suggestions.length} transfers</div>`;
+    headline = hitPoints > 0
+      ? `<div class="verdict maybe">Proceed with ${capped.length} transfers (-4 hit)</div>`
+      : `<div class="verdict yes">Proceed with ${capped.length} transfers</div>`;
   }
  
   let html = headline;
   html += `<div class="stat-line"><span class="k">Free transfers available</span><span class="v">${freeTransfers}</span></div>`;
-  if(suggestions.length > freeTransfers && freeTransfers >= 0){
-    const hitsNeeded = Math.max(0, suggestions.length - freeTransfers);
-    if(hitsNeeded > 0){
-      html += `<div class="stat-line"><span class="k">Point hits needed</span><span class="v neg">-${hitsNeeded * 4} pts</span></div>`;
-    }
+  if(hitPoints > 0){
+    html += `<div class="stat-line"><span class="k">Point hit</span><span class="v neg">-${hitPoints} pts</span></div>`;
+  }
+  if(suggestions.length > capped.length){
+    html += `<div class="stat-line"><span class="k">Other upgrades available</span><span class="v">${suggestions.length - capped.length} more (not worth exceeding a -4 hit)</span></div>`;
   }
  
-  suggestions.forEach((s, i) => {
+  capped.forEach((s, i) => {
     const costText = s.cost > 0 ? `+£${(s.cost/10).toFixed(1)}m` : s.cost < 0 ? `-£${Math.abs(s.cost/10).toFixed(1)}m` : "£0.0m";
+    const oppText = fixtureOpponentText(s.in.team, latestFixturesData, latestNextGwId);
     html += `
       <div style="margin-top:${i>0?'16px':'12px'};padding-top:${i>0?'12px':'0'};${i>0?'border-top:1px solid var(--line)':''}">
+        <div style="font-size:11px;color:var(--sub);margin-bottom:6px">PRIORITY ${i+1}${s.isInjuryDriven ? ' · INJURY' : ''}</div>
         <div class="transfer-row">
           <div class="pwrap">${playerCardHtml(s.out, false, false)}<div style="font-size:11px;color:var(--sub);margin-top:4px">OUT</div></div>
           <div class="transfer-arrow">→</div>
@@ -854,6 +907,7 @@ function renderTransfer(suggestions, freeTransfers){
         </div>
         <div class="stat-line"><span class="k">Projected gain (per GW)</span><span class="v ${s.gain>=0?'pos':'neg'}">${s.gain>=0?'+':''}${s.gain.toFixed(1)} pts</span></div>
         <div class="stat-line"><span class="k">Cost difference</span><span class="v">${costText}</span></div>
+        ${oppText ? `<div class="stat-line"><span class="k">${escapeHtml(s.in.web_name)} plays</span><span class="v">${escapeHtml(oppText)}</span></div>` : ""}
         ${s.isInjuryDriven ? `<div class="stat-line"><span class="k">Reason</span><span class="v neg">${escapeHtml(s.out.web_name)} is ${escapeHtml(availabilityFlag(s.out) || "unavailable")}</span></div>` : ""}
       </div>
     `;
@@ -1146,6 +1200,94 @@ function renderScout(){
   `).join("");
 }
  
+// ---------- Differential finder ----------
+// FPL's public API does NOT expose other managers' current squads (that's
+// private data), so a literal "players in common right now" comparison
+// isn't possible. This combines the two things that ARE genuinely
+// buildable: (1) global ownership % to flag which of YOUR players are
+// differentials vs template picks, and (2) a specific rival's PAST
+// gameweek picks (which the API does expose, since results are historical)
+// as a proxy for "players you've both started before."
+let rivalOptionsForDiff = []; // [{entry, entry_name}] across all loaded leagues
+ 
+function buildOwnershipDifferentials(squadPlayers){
+  const withOwnership = squadPlayers.map(p => ({
+    player: p,
+    ownership: parseFloat(p.selected_by_percent || "0")
+  }));
+  withOwnership.sort((a,b) => a.ownership - b.ownership);
+  return withOwnership;
+}
+ 
+async function loadRivalHistoricalOverlap(rivalEntryId, myPicksIds, gwId){
+  try{
+    const rivalPicks = await fplFetch(`/entry/${rivalEntryId}/event/${gwId}/picks/`);
+    const rivalIds = new Set((rivalPicks.picks || []).map(pk => pk.element));
+    return [...myPicksIds].filter(id => rivalIds.has(id));
+  }catch(err){
+    console.error("Rival picks fetch failed", err);
+    return null;
+  }
+}
+ 
+function renderDifferentials(squadPlayers, gwForPicks){
+  $("diffCard").classList.remove("hidden");
+ 
+  const ownershipRanked = buildOwnershipDifferentials(squadPlayers);
+  let html = `<div style="font-size:12px;color:var(--sub);font-weight:700;margin-bottom:8px">YOUR SQUAD BY OWNERSHIP</div>`;
+  ownershipRanked.forEach(({ player, ownership }) => {
+    const isLow = ownership < 10;
+    const isTemplate = ownership >= 30;
+    html += `<div class="diff-player-row">
+      <span>${escapeHtml(player.web_name)}</span>
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="color:var(--sub)">${ownership.toFixed(1)}%</span>
+        ${isLow ? '<span class="diff-tag low">Differential</span>' : isTemplate ? '<span class="diff-tag template">Template</span>' : ''}
+      </span>
+    </div>`;
+  });
+ 
+  html += `<div style="font-size:12px;color:var(--sub);font-weight:700;margin:16px 0 8px">COMPARE PAST PICKS WITH A RIVAL</div>`;
+  html += `<p style="font-size:12px;color:var(--sub);margin:0 0 10px">FPL doesn't expose a rival's <i>current</i> squad, but their picks from a past gameweek are visible — useful as a rough proxy for overlap.</p>`;
+ 
+  if(rivalOptionsForDiff.length === 0){
+    html += `<p style="font-size:12px;color:var(--sub);margin:0">Add a mini league above to compare with specific rivals.</p>`;
+  } else {
+    html += `<select id="rivalSelect" class="rival-select">
+      <option value="">Choose a rival…</option>
+      ${rivalOptionsForDiff.map(r => `<option value="${r.entry}">${escapeHtml(r.entry_name)}</option>`).join("")}
+    </select>`;
+    html += `<div id="rivalOverlapResult"></div>`;
+  }
+ 
+  $("diffBody").innerHTML = html;
+ 
+  const select = document.getElementById("rivalSelect");
+  if(select){
+    select.addEventListener("change", async () => {
+      const rivalId = select.value;
+      const resultEl = document.getElementById("rivalOverlapResult");
+      if(!rivalId){ resultEl.innerHTML = ""; return; }
+      resultEl.innerHTML = `<div class="sub"><span class="spinner"></span> Checking overlap…</div>`;
+      const myIds = new Set(squadPlayers.map(p => p.id));
+      const overlapIds = await loadRivalHistoricalOverlap(rivalId, myIds, gwForPicks);
+      if(overlapIds === null){
+        resultEl.innerHTML = `<div class="sub" style="color:var(--red)">Couldn't load that manager's picks (may be a private/invalid team).</div>`;
+        return;
+      }
+      if(overlapIds.length === 0){
+        resultEl.innerHTML = `<div class="sub" style="margin-top:8px">No overlap in GW${gwForPicks} picks — good differential coverage against this rival.</div>`;
+        return;
+      }
+      resultEl.innerHTML = `<div class="sub" style="margin-top:8px;margin-bottom:6px">You both started these in GW${gwForPicks}:</div>` +
+        overlapIds.map(id => {
+          const p = elementsById[id];
+          return `<div class="diff-player-row"><span>${escapeHtml(p?.web_name || "Unknown")}</span></div>`;
+        }).join("");
+    });
+  }
+}
+ 
  
 async function loadTeam(){
   const teamIdRaw = $("teamId").value.trim();
@@ -1184,6 +1326,8 @@ async function loadTeam(){
  
     const historyData = await fplFetch(`/entry/${teamId}/history/`).catch(() => null);
     const fixturesData = await fplFetch(`/fixtures/?event=${nextGwId}`).catch(() => []);
+    latestFixturesData = fixturesData;
+    latestNextGwId = nextGwId;
  
     const squadPlayers = picksData.picks.map(pk => {
       const base = elementsById[pk.element];
@@ -1242,6 +1386,19 @@ async function loadTeam(){
  
     // Fantasy Football Scout — direct links to their current-GW pages
     renderScout();
+ 
+    // Differential finder — ownership-based + rival historical overlap
+    rivalOptionsForDiff = [];
+    const seenEntries = new Set();
+    allLeagueDataClean.forEach(d => {
+      if(d.error || !d.sorted) return;
+      d.sorted.forEach(r => {
+        if(r.entry === Number(teamId) || seenEntries.has(r.entry)) return;
+        seenEntries.add(r.entry);
+        rivalOptionsForDiff.push({ entry: r.entry, entry_name: r.entry_name });
+      });
+    });
+    renderDifferentials(squadPlayers, gwForPicks);
  
     // Deadline countdown
     if(nextEvent && nextEvent.deadline_time){
